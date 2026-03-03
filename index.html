@@ -38,10 +38,11 @@ Description: This is a form that will collect the users information with Fetch A
                     loading="lazy">
             </iframe>
         </div>
-        
-        <table>              
-            <form id="patientForm" action="process.php" method="POST">
-                <div class="format">
+
+        <!-- FIX 1: <form> wraps <table>. Illegal <div> inside <table> removed.
+                   The .format class is moved directly onto the <table> element. -->
+        <form id="patientForm" action="process.php" method="POST">
+            <table class="format">              
                     <tr class="form">
                         <th class="form" colspan="3">Patient Form</th>
                     </tr>
@@ -408,9 +409,8 @@ Description: This is a form that will collect the users information with Fetch A
                             <input type="submit" value="Submit" id="submitButton" style="display:none;">
                         </td>
                     </tr>
-                </div>
-            </form>  
-        </table>
+            </table>
+        </form>
        
         <div id="reviewArea"></div>
         <div id="validationSummary"></div>
@@ -685,12 +685,13 @@ Description: This is a form that will collect the users information with Fetch A
             document.getElementById("rememberMe").checked = false;
         });
 
-        document.getElementById("patientForm").addEventListener("submit", function(e) {
-            e.preventDefault();
-            
+        // FIX 2 & 3: Save cookie/localStorage BEFORE allowing the native POST to process.php.
+        // e.preventDefault() and the JS redirect are removed so the browser submits normally.
+        document.getElementById("patientForm").addEventListener("submit", function() {
             var firstName = document.getElementById("firstName").value;
             
             if (isRememberMeChecked()) {
+                // Persist data so it survives the page reload after PHP redirects back
                 setCookie('firstName', firstName, 48);
                 saveToLocalStorage();
             } else {
@@ -698,7 +699,7 @@ Description: This is a form that will collect the users information with Fetch A
                 clearLocalStorage();
             }
             
-            window.location.href = 'homework4thankyou.html';
+            // No e.preventDefault() — the form proceeds with its native POST to process.php
         });
     });
     </script>
